@@ -6,15 +6,13 @@ import java.util.*;
 
 public class Parser implements AutoCloseable{
 
-    private final Config config;
+    private final Config config = new Config();
     private Connection connect;
     private File file =  new File(System.getProperty("java.io.tmpdir") + "/access_old4.log");
     private List<Item> items = new ArrayList<>();
    // private SimpleDateFormat formatter = new SimpleDateFormat("dd/MMM/yyyy:HH:mm:ss", Locale.ENGLISH);
 
-    public Parser(Config config) {
-        this.config = config;
-    }
+
 
     public boolean connectToDB() {
         this.config.init();
@@ -60,7 +58,7 @@ public class Parser implements AutoCloseable{
                         sectionName = getSectionName(application);
                         this.items.add(new Item(ipAdress, appVersion, login, sectionName, dateTime));
                     }
-                    if (this.items.size() == 1000000) {
+                    if (this.items.size() == 500000) {
                         this.loadToDB(this.items);
                         this.items.clear();
                     }

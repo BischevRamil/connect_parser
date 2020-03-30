@@ -63,10 +63,6 @@
                      <Label fx:id="sectionName_freq_min_q" layoutX="486.0" layoutY="80.0" text=":" />
                      <Label fx:id="appVersion_freq_min_q" layoutX="486.0" layoutY="113.0" text=":" />
                      <Label fx:id="login_freq_min_q" layoutX="486.0" layoutY="153.0" text=":" />
-                     <Button fx:id="ip_freq_button" disable="true" layoutX="140.0" layoutY="41.0" mnemonicParsing="false" text="-&gt;" />
-                     <Button fx:id="sectionName_freq_button" disable="true" layoutX="140.0" layoutY="75.0" mnemonicParsing="false" text="-&gt;" />
-                     <Button fx:id="appVersion_freq_button" disable="true" layoutX="140.0" layoutY="108.0" mnemonicParsing="false" text="-&gt;" />
-                     <Button fx:id="login_freq_button" disable="true" layoutX="140.0" layoutY="148.0" mnemonicParsing="false" text="-&gt;" />
                   </children></AnchorPane>
          </content>
        </Tab>
