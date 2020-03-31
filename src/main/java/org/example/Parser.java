@@ -4,13 +4,16 @@ import java.io.*;
 import java.sql.*;
 import java.util.*;
 
+/**
+ * @author Bischev Ramil
+ * Класс для парсинга файла(файл должен лежать во временной папке ОС).
+ */
 public class Parser implements AutoCloseable{
 
     private final Config config = new Config();
     private Connection connect;
     private File file =  new File(System.getProperty("java.io.tmpdir") + "/access_old4.log");
     private List<Item> items = new ArrayList<>();
-   // private SimpleDateFormat formatter = new SimpleDateFormat("dd/MMM/yyyy:HH:mm:ss", Locale.ENGLISH);
 
 
 
@@ -20,7 +23,7 @@ public class Parser implements AutoCloseable{
             this.connect = DriverManager.getConnection(this.config.get("url"));
             connect.setAutoCommit(false);
             Statement st = connect.createStatement();
-            st.execute("create table if not exists items (id serial primary key, ipAdress text(50), sectionName text(500), appVersion text(500), login text(500), dateTime text(100));");
+            st.execute("create table if not exists items (id serial primary key, ipAdress text(50), sectionName text(500), appVersion text(500), login text(500));");
             this.clearTable("items");
         } catch (Exception e) {
             e.printStackTrace();
@@ -36,6 +39,10 @@ public class Parser implements AutoCloseable{
         }
     }
 
+    /**
+     * Парсим данные в ArrayList, когда количество записей равно 500_000, все данные из ArrayList переносятся в БД.
+     * Это необходимо что бы Heap java не перегружался данными.
+     */
     public void parserLog() {
         if (this.connectToDB()) {
             try(BufferedReader reader = new BufferedReader(new FileReader(this.file))) {
@@ -45,18 +52,16 @@ public class Parser implements AutoCloseable{
                 String appVersion;
                 String login;
                 String sectionName;
-                String dateTime;
                 line = reader.readLine();
                 while((line = reader.readLine()) != null) {
                     if (line.contains("AppVersion=") && line.contains("Login=") && line.contains("SectionName=")) {
                         String[] entry = line.split("\t");
                         ipAdress = entry[0];
-                        dateTime = entry[3].substring(1, entry[3].length() - 7);
                         application = entry[5];
                         appVersion = getAppVersion(application);
                         login = getLogin(application);
                         sectionName = getSectionName(application);
-                        this.items.add(new Item(ipAdress, appVersion, login, sectionName, dateTime));
+                        this.items.add(new Item(ipAdress, appVersion, login, sectionName));
                     }
                     if (this.items.size() == 500000) {
                         this.loadToDB(this.items);
@@ -92,7 +97,6 @@ public class Parser implements AutoCloseable{
                 statement.setString(2, item.getSectionName());
                 statement.setString(3, item.getAppVersion());
                 statement.setString(4, item.getLogin());
-                statement.setString(5, item.getDateTime());
                 statement.addBatch();
             }
             statement.executeBatch();
@@ -104,8 +108,7 @@ public class Parser implements AutoCloseable{
 
 
     enum SQLItems {
-        GETALL("SELECT * FROM items;"),
-        INSERT("INSERT INTO items (ipAdress, sectionName, appVersion, login, dateTime) VALUES (?, ?, ?, ?, ?);");
+        INSERT("INSERT INTO items (ipAdress, sectionName, appVersion, login) VALUES (?, ?, ?, ?);");
 
         String query;
 

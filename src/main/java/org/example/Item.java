@@ -1,22 +1,17 @@
 package org.example;
 
-
-import java.util.Date;
-
 public class Item {
 
     private String IPadress;
     private String appVersion;
     private String login;
     private String sectionName;
-    private String dateTime;
 
-    public Item(String IPadress, String appVersion, String login, String sectionName, String dateTime) {
+    public Item(String IPadress, String appVersion, String login, String sectionName) {
         this.IPadress = IPadress;
         this.appVersion = appVersion;
         this.login = login;
         this.sectionName = sectionName;
-        this.dateTime = dateTime;
     }
 
     public String getIPadress() {
@@ -35,18 +30,4 @@ public class Item {
         return sectionName;
     }
 
-    public String getDateTime() {
-        return dateTime;
-    }
-
-    @Override
-    public String toString() {
-        return "Item{" +
-                "IPadress='" + IPadress + '\'' +
-                ", appVersion='" + appVersion + '\'' +
-                ", login='" + login + '\'' +
-                ", sectionName='" + sectionName + '\'' +
-                ", dateTime=" + dateTime +
-                '}';
-    }
 }

@@ -129,26 +129,13 @@ public class Controller {
             logQuery = new LogQuery();
             sum_button.setDisable(false);
             ip_sum_button.setDisable(false);
+            ip_freq_button.setDisable(false);
             sectionName_sum_button.setDisable(false);
+            sectionName_freq_button.setDisable(false);
             appVersion_sum_button.setDisable(false);
+            appVersion_freq_button.setDisable(false);
             login_sum_button.setDisable(false);
-//            String[] results;
-//
-//            results = logQuery.returnRecordMax(ipAdress);
-//            ipAdress_freq_max.setText(results[0]);
-//            ipAdress_freq_max_q.setText(results[1]);
-//
-//            results = logQuery.returnRecordMax(sectionName);
-//            sectionName_freq_max.setText(results[0]);
-//            sectionName_freq_max_q.setText(results[1]);
-//
-//            results = logQuery.returnRecordMax(appVersion);
-//            appVersion_freq_max.setText(results[0]);
-//            appVersion_freq_max_q.setText(results[1]);
-//
-//            results = logQuery.returnRecordMax(login);
-//            login_freq_max.setText(results[0]);
-//            login_freq_max_q.setText(results[1]);
+            login_freq_button.setDisable(false);
         });
 
         sum_button.setOnAction(event -> {
@@ -169,6 +156,46 @@ public class Controller {
 
         login_sum_button.setOnAction(event -> {
             login_field_q.setText(logQuery.returnRecordQuonty(login).toString());
+        });
+
+        ip_freq_button.setOnAction(event -> {
+            String[] str = logQuery.returnRecordMax(ipAdress);
+            ipAdress_freq_max.setText(str[0]);
+            ipAdress_freq_max_q.setText(str[1]);
+
+            str = logQuery.returnRecordMin(ipAdress);
+            ipAdress_freq_min.setText(str[0]);
+            ipAdress_freq_min_q.setText(str[1]);
+        });
+
+        sectionName_freq_button.setOnAction(event -> {
+            String[] str = logQuery.returnRecordMax(sectionName);
+            sectionName_freq_max.setText(str[0]);
+            sectionName_freq_max_q.setText(str[1]);
+
+            str = logQuery.returnRecordMin(sectionName);
+            sectionName_freq_min.setText(str[0]);
+            sectionName_freq_min_q.setText(str[1]);
+        });
+
+        appVersion_freq_button.setOnAction(event -> {
+            String[] str = logQuery.returnRecordMax(appVersion);
+            appVersion_freq_max.setText(str[0]);
+            appVersion_freq_max_q.setText(str[1]);
+
+            str = logQuery.returnRecordMin(appVersion);
+            appVersion_freq_min.setText(str[0]);
+            appVersion_freq_min_q.setText(str[1]);
+        });
+
+        login_freq_button.setOnAction(event -> {
+            String[] str = logQuery.returnRecordMax(login);
+            login_freq_max.setText(str[0]);
+            login_freq_max_q.setText(str[1]);
+
+            str = logQuery.returnRecordMin(login);
+            login_freq_min.setText(str[0]);
+            login_freq_min_q.setText(str[1]);
         });
     }
 }

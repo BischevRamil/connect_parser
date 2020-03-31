@@ -2,6 +2,10 @@ package org.example;
 
 import java.sql.*;
 
+/**
+ * @author Ramil Bischev
+ * Класс для выгрузки данных из БД.
+ */
 public class LogQuery implements AutoCloseable{
     private final Config config = new Config();
     private Connection connect;
@@ -10,14 +14,13 @@ public class LogQuery implements AutoCloseable{
         connectToDB();
     }
 
-    public boolean connectToDB() {
+    public void connectToDB() {
         this.config.init();
         try {
             this.connect = DriverManager.getConnection(this.config.get("url"));
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return this.connect != null;
     }
 
     public Integer allRecords() {
@@ -49,6 +52,19 @@ public class LogQuery implements AutoCloseable{
         String[] fld = new String[2];
         try (Statement statement = this.connect.createStatement()) {
             ResultSet rs = statement.executeQuery("SELECT " + field + ", count(*) c FROM items GROUP BY " + field + " ORDER BY c DESC LIMIT 1;");
+            rs.next();
+            fld[0] = rs.getString(1);
+            fld[1] = rs.getString(2);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        return fld;
+    }
+
+    public String[] returnRecordMin(String field) {
+        String[] fld = new String[2];
+        try (Statement statement = this.connect.createStatement()) {
+            ResultSet rs = statement.executeQuery("SELECT " + field + ", count(*) c FROM items GROUP BY " + field + " ORDER BY c LIMIT 1;");
             rs.next();
             fld[0] = rs.getString(1);
             fld[1] = rs.getString(2);
