@@ -8,15 +8,22 @@ import java.util.*;
  * @author Bischev Ramil
  * Класс для парсинга файла(файл должен лежать во временной папке ОС).
  */
-public class Parser implements AutoCloseable{
+public class Parser implements AutoCloseable, Runnable{
 
     private final Config config = new Config();
     private Connection connect;
     private File file =  new File(System.getProperty("java.io.tmpdir") + "/access_old4.log");
     private List<Item> items = new ArrayList<>();
+    private int lines;
+    private int totalLines;
 
+    public int getLines() {
+        return this.lines;
+    }
 
-
+    public int getTotalLines() {
+        return this.totalLines;
+    }
     public boolean connectToDB() {
         this.config.init();
         try {
@@ -39,6 +46,21 @@ public class Parser implements AutoCloseable{
         }
     }
 
+    private void totalLines() {
+        int linesCount = 0;
+        try(LineNumberReader lnr = new LineNumberReader(new FileReader(this.file))) {
+            while (lnr.readLine() != null) {
+                linesCount++;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        this.totalLines = linesCount;
+    }
+
+
+
+
     /**
      * Парсим данные в ArrayList, когда количество записей равно 500_000, все данные из ArrayList переносятся в БД.
      * Это необходимо что бы Heap java не перегружался данными.
@@ -46,6 +68,7 @@ public class Parser implements AutoCloseable{
     public void parserLog() {
         if (this.connectToDB()) {
             try(BufferedReader reader = new BufferedReader(new FileReader(this.file))) {
+                this.lines = 0;
                 String line;
                 String ipAdress;
                 String application;
@@ -54,18 +77,25 @@ public class Parser implements AutoCloseable{
                 String sectionName;
                 line = reader.readLine();
                 while((line = reader.readLine()) != null) {
-                    if (line.contains("AppVersion=") && line.contains("Login=") && line.contains("SectionName=")) {
-                        String[] entry = line.split("\t");
-                        ipAdress = entry[0];
-                        application = entry[5];
-                        appVersion = getAppVersion(application);
-                        login = getLogin(application);
-                        sectionName = getSectionName(application);
-                        this.items.add(new Item(ipAdress, appVersion, login, sectionName));
-                    }
-                    if (this.items.size() == 500000) {
-                        this.loadToDB(this.items);
-                        this.items.clear();
+                    if (!Thread.interrupted()) {
+                        if (line.contains("AppVersion=") && line.contains("Login=") && line.contains("SectionName=")) {
+                            String[] entry = line.split("\t");
+                            ipAdress = entry[0];
+                            application = entry[5];
+                            appVersion = getAppVersion(application);
+                            login = getLogin(application);
+                            sectionName = getSectionName(application);
+                            this.items.add(new Item(ipAdress, appVersion, login, sectionName));
+                            this.lines++;
+                        } else {
+                            this.totalLines--;
+                        }
+                        if (this.items.size() == 500000) {
+                            this.loadToDB(this.items);
+                            this.items.clear();
+                        }
+                    } else {
+                        return;
                     }
                 }
                 this.loadToDB(this.items);
@@ -104,6 +134,12 @@ public class Parser implements AutoCloseable{
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    synchronized public void run() {
+        this.totalLines();
+        this.parserLog();
     }
 
 

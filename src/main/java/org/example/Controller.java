@@ -2,9 +2,13 @@ package org.example;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+
+import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Tab;
 
 public class Controller {
@@ -12,7 +16,8 @@ public class Controller {
     private final String sectionName = "sectionName";
     private final String appVersion = "appVersion";
     private final String login = "login";
-
+    private Parser parser;
+    private Thread th;
     private LogQuery logQuery;
 
     @FXML
@@ -121,22 +126,72 @@ public class Controller {
     private Button login_freq_button;
 
     @FXML
-    void initialize() {
-        startParse_button.setOnAction(event -> {
-            startParse_button.setDisable(true);
-            new Parser().parserLog();
+    private Button cancel_button;
 
-            logQuery = new LogQuery();
-            sum_button.setDisable(false);
-            ip_sum_button.setDisable(false);
-            ip_freq_button.setDisable(false);
-            sectionName_sum_button.setDisable(false);
-            sectionName_freq_button.setDisable(false);
-            appVersion_sum_button.setDisable(false);
-            appVersion_freq_button.setDisable(false);
-            login_sum_button.setDisable(false);
-            login_freq_button.setDisable(false);
-        });
+    @FXML
+    private ProgressBar progressBar;
+
+    @FXML
+    private Label finish_label;
+
+    @FXML
+    void startParse(ActionEvent event) throws InterruptedException {
+        Task<Void> voidTask = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                startParse_button.setDisable(true);
+                int lines, totalLines;
+                while ((lines = parser.getLines()) <= (totalLines = parser.getTotalLines())) {
+                    updateProgress(lines, totalLines);
+                    updateMessage(lines + ".");
+                }
+                return null;
+            }
+        };
+
+        cancel_button.setDisable(false);
+        progressBar.progressProperty().unbind();
+        progressBar.progressProperty().bind(voidTask.progressProperty());
+        finish_label.textProperty().unbind();
+        finish_label.textProperty().bind(voidTask.messageProperty());
+
+        Thread thread = new Thread(voidTask);
+        thread.setDaemon(true);
+        thread.start();
+
+        this.parser = new Parser();
+        th = new Thread(parser);
+        th.setDaemon(true);
+        th.start();
+
+
+    }
+
+
+    @FXML
+    void cancelParse(ActionEvent event) {
+        startParse_button.setDisable(false);
+        cancel_button.setDisable(true);
+        th.interrupt();
+        progressBar.progressProperty().unbind();
+        finish_label.textProperty().unbind();
+        progressBar.setProgress(0);
+    }
+
+    @FXML
+    void initialize() {
+
+                logQuery = new LogQuery();
+                sum_button.setDisable(false);
+                ip_sum_button.setDisable(false);
+                ip_freq_button.setDisable(false);
+                sectionName_sum_button.setDisable(false);
+                sectionName_freq_button.setDisable(false);
+                appVersion_sum_button.setDisable(false);
+                appVersion_freq_button.setDisable(false);
+                login_sum_button.setDisable(false);
+                login_freq_button.setDisable(false);
+
 
         sum_button.setOnAction(event -> {
             allRecords_field_q.setText(logQuery.allRecords().toString());
