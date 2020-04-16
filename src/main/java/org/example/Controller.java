@@ -1,5 +1,6 @@
 package org.example;
 
+import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -10,6 +11,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Tab;
+import javafx.scene.layout.AnchorPane;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
 public class Controller {
     private final String ipAdress = "ipAdress";
@@ -19,6 +23,10 @@ public class Controller {
     private Parser parser;
     private Thread th;
     private LogQuery logQuery;
+    final FileChooser fileChooser = new FileChooser();
+
+    @FXML
+    private AnchorPane node;
 
     @FXML
     private ResourceBundle resources;
@@ -159,14 +167,13 @@ public class Controller {
         thread.setDaemon(true);
         thread.start();
 
-        this.parser = new Parser();
+
         th = new Thread(parser);
         th.setDaemon(true);
         th.start();
 
 
     }
-
 
     @FXML
     void cancelParse(ActionEvent event) {
@@ -179,18 +186,27 @@ public class Controller {
     }
 
     @FXML
+    void chooseFile(ActionEvent event) {
+        File file = fileChooser.showOpenDialog(node.getScene().getWindow());
+        this.parser = new Parser(file);
+        startParse_button.setDisable(false);
+
+    }
+
+    @FXML
     void initialize() {
 
-                logQuery = new LogQuery();
-                sum_button.setDisable(false);
-                ip_sum_button.setDisable(false);
-                ip_freq_button.setDisable(false);
-                sectionName_sum_button.setDisable(false);
-                sectionName_freq_button.setDisable(false);
-                appVersion_sum_button.setDisable(false);
-                appVersion_freq_button.setDisable(false);
-                login_sum_button.setDisable(false);
-                login_freq_button.setDisable(false);
+        this.logQuery = new LogQuery();
+        startParse_button.setDisable(true);
+        sum_button.setDisable(false);
+        ip_sum_button.setDisable(false);
+        ip_freq_button.setDisable(false);
+        sectionName_sum_button.setDisable(false);
+        sectionName_freq_button.setDisable(false);
+        appVersion_sum_button.setDisable(false);
+        appVersion_freq_button.setDisable(false);
+        login_sum_button.setDisable(false);
+        login_freq_button.setDisable(false);
 
 
         sum_button.setOnAction(event -> {

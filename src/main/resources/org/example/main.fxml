@@ -8,8 +8,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.shape.Line?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.Controller">
-    <Label layoutX="14.0" layoutY="14.0" text="Парсер ЛОГ файла">Hello World!!!</Label>
+<AnchorPane fx:id="node" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.Controller">
    <Button fx:id="startParse_button" layoutX="144.0" layoutY="9.0" mnemonicParsing="false" onAction="#startParse" text="Start" />
    <TabPane layoutX="14.0" layoutY="43.0" prefHeight="354.0" prefWidth="573.0" tabClosingPolicy="UNAVAILABLE">
      <tabs>
@@ -76,4 +75,5 @@
    <Button fx:id="cancel_button" layoutX="205.0" layoutY="9.0" mnemonicParsing="false" onAction="#cancelParse" text="Cancel" />
    <ProgressBar fx:id="progressBar" layoutX="280.0" layoutY="12.0" prefWidth="200.0" progress="0.0" />
    <Label fx:id="finish_label" layoutX="493.0" layoutY="14.0" />
+   <Button fx:id="chooseFile_button" layoutX="14.0" layoutY="9.0" mnemonicParsing="false" onAction="#chooseFile" prefHeight="26.0" prefWidth="117.0" text="Select file" />
 </AnchorPane>

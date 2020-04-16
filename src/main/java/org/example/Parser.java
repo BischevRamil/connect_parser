@@ -12,7 +12,8 @@ public class Parser implements AutoCloseable, Runnable{
 
     private final Config config = new Config();
     private Connection connect;
-    private File file =  new File(System.getProperty("java.io.tmpdir") + "/access_old4.log");
+    //private File file =  new File(System.getProperty("java.io.tmpdir") + "/access_old4.log");
+    private File file;
     private List<Item> items = new ArrayList<>();
     private int lines;
     private int totalLines;
@@ -24,6 +25,11 @@ public class Parser implements AutoCloseable, Runnable{
     public int getTotalLines() {
         return this.totalLines;
     }
+
+    public Parser(File file) {
+        this.file = file;
+    }
+
     public boolean connectToDB() {
         this.config.init();
         try {
